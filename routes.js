@@ -3,6 +3,22 @@ const routes = Router();
 
 const projects = [];
 
+function checkIdMiddleware(req, res, next) {
+  const { id } = req.params;
+
+  // const idsArray = projects.map(item => item.id);
+  // const paramId = idsArray.includes(id);
+  // const paramId = projects.includes(id);
+  // const paramId = projects.filter(item => item.id == id);
+  const paramId = projects.find(item => item.id == id);
+  console.log("id required: ", paramId);
+
+  if (!paramId) {
+    return res.status(400).send('Project id not found.');
+  }
+  next();
+}
+
 routes.get('/', (req, res) => {
   return res.json(projects);
 });
@@ -16,7 +32,7 @@ routes.post('/', (req, res) => {
   return res.json(projects);
 });
 
-routes.post('/:id/tasks', (req, res) => {
+routes.post('/:id/tasks', checkIdMiddleware, (req, res) => {
   const { title } = req.body;
   const { id } = req.params;
   const paramId = projects.findIndex(item => item.id == id);
@@ -26,7 +42,7 @@ routes.post('/:id/tasks', (req, res) => {
   return res.json(projects);
 });
 
-routes.put('/:id', (req, res) => {
+routes.put('/:id', checkIdMiddleware, (req, res) => {
   const { title } = req.body;
   const { id } = req.params;
   const paramId = projects.findIndex(item => item.id == id);
@@ -35,7 +51,7 @@ routes.put('/:id', (req, res) => {
   return res.json(projects);
 });
 
-routes.delete('/:id', (req, res) => {
+routes.delete('/:id', checkIdMiddleware, (req, res) => {
   const { id } = req.params;
   const paramId = projects.findIndex(item => item.id == id);
 
